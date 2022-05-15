@@ -4,7 +4,7 @@ public class Hometown {
     public int id_student;
     public String hometown;
 
-    public Hometown () {
+    public Hometown() {
     }
 
     public Hometown(int id_student, String hometown) {

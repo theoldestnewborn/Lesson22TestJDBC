@@ -1,16 +1,7 @@
 package org.example;
-
-import Entities.Hometown;
 import Entities.Student;
-import Interfaces.DBChange;
-import db.DBConfig;
 import db.HometownRepository;
 import db.StudentsRepository;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Main {
     public static void main(String[] args) {
