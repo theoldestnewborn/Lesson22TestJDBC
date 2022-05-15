@@ -2,16 +2,18 @@ package db;
 
 import Entities.Hometown;
 import Entities.Student;
+import Interfaces.DBChange;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentsRepository {
+public class StudentsRepository implements DBChange {
     Student student = new Student();
     HometownRepository hr;
 
-    public void ChangeDB(String sql) {
+    @Override
+    public void DBChange(String sql) {
         try (Connection conn = DriverManager.getConnection(
                 DBConfig.URL, DBConfig.USER, DBConfig.PASSWORD);
              Statement stmt = conn.createStatement()) {
@@ -26,39 +28,14 @@ public class StudentsRepository {
                 ", '" + student.getName() + "', " +
                 "'" + student.getLanguage() + "', " +
                 "'" + student.getGender() + "', " +
-                + student.getPayment() + ");" +
+                +student.getPayment() + ");" +
                 "insert into hometown values (" + student.getId() + ", '" + student.getHometown() + "');";
 
     }
 
-    public String update(Student student) {
-        return "update students set payment = 500 where id_student =" + student.getId() + ";";
-        }
-
-    public String deleteOne(int id) {
-        return  "delete from students where id_student =" + id + ";";
-    }
-
-    public List<Student> getAll() {
-        List <Student> studentsList = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DBConfig.URL,
-                DBConfig.USER, DBConfig.PASSWORD);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery
-                     ("select * from students order by id_student")) {
-            while (rs.next()) {
-                Student student1 = new Student();
-                student1.setId(rs.getInt("id_student"));
-                student1.setName(rs.getString("name"));
-                student1.setGender(rs.getString("gender"));
-                student1.setLanguage(rs.getString("language"));
-                student1.setPayment(rs.getInt("payment"));
-                studentsList.add(student1);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return studentsList;
+    public String deleteStudent(int id) {
+        return "delete from students where id_student =" + id + ";"
+                + "delete from hometown where id_student =" + id + ";";
     }
 
     public void printAll() {
@@ -78,7 +55,7 @@ public class StudentsRepository {
                         + ", PAYMENT - " + rs.getInt("payment")
                         + ", HOMETOWN - " + rs.getString("hometown"));
             }
-            System.out.println("\n");
+            System.out.println("");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -110,34 +87,30 @@ public class StudentsRepository {
         return student1;
     }
 
+    public String update(int id) {
+        return "update students set payment = 500 where id_student =" + id + ";";
+    }
 
+    public List<Student> getAll() {
+        List<Student> studentsList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL,
+                DBConfig.USER, DBConfig.PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery
+                     ("select * from students order by id_student")) {
+            while (rs.next()) {
+                Student student1 = new Student();
+                student1.setId(rs.getInt("id_student"));
+                student1.setName(rs.getString("name"));
+                student1.setGender(rs.getString("gender"));
+                student1.setLanguage(rs.getString("language"));
+                student1.setPayment(rs.getInt("payment"));
+                studentsList.add(student1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return studentsList;
+    }
 
-//    public void getNames() {
-//        try (Connection cn = DriverManager.getConnection(DBConfig.URL, DBConfig.USER,
-//                DBConfig.PASSWORD);
-//             Statement st = cn.createStatement();
-//             ResultSet rs = st.executeQuery("select id_student, " +
-//                     "name from students order by id_student;")) {
-//            while (rs.next()) {
-//                System.out.println("ID: " + rs.getInt("id_student") +
-//                        " NAME: " + rs.getString("name"));
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-//    public void getOne(int id_student) {
-//        try (Connection conn = DriverManager.getConnection(DBConfig.URL,
-//                DBConfig.USER, DBConfig.PASSWORD);
-//             Statement st = conn.createStatement();
-//             ResultSet rs = st.executeQuery
-//                     ("select * from students where id_student = ")) { // как?
-//            while (rs.next()) {
-//                System.out.println("Name:" + rs.getString("name"));
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 }
